@@ -16,10 +16,10 @@ Index page example:
     
     if ($update){ //cache out of date
     	$contents = $cache->openUncompressed($file);
-    	$contents = $cache->append_css($fileCss,$contents);
-    	$contents = $cache->compress_page($contents);
+    	$contents = $cache->appendCss($fileCss,$contents);
+    	$contents = $cache->compressPage($contents);
     	$cache->updateCache($fileComp,$contents);
-    	$cache->compressgz($contents,$fileComp.'.gz');
+    	$cache->compressGz($contents,$fileComp.'.gz');
     	$cache->expiresHeaders();
     	echo $cache->finalOutput();
     }
@@ -44,11 +44,11 @@ Javascript page example:
     		$file = $file;
     		$fileOut[] = $cache->openUncompressed($file);
     	}
-    	$compressed = $cache->compress_js($fileOut[2]);
+    	$compressed = $cache->compressJs($fileOut[2]);
     	$compressed = $fileOut[0].$fileOut[1].$compressed;
     	$cache->output = $compressed;
     	$cache->updateCache($fileComp,$compressed);
-    	$cache->compressgz($compressed,$fileComp.'.gz');
+    	$cache->compressGz($compressed,$fileComp.'.gz');
     	$cache->expiresHeaders();
     	echo $cache->finalOutput();
     }

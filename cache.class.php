@@ -76,7 +76,7 @@ class RoadRunner{
 		//client has requested new data and $comp does exsist and cache is in date
 		if (file_exists($comp) && $updateCache==0) {
 			$this->loadCache($comp);
-		    $this->loadcompressgz($comp.'.gz');
+		    $this->loadCompressGz($comp.'.gz');
 
 			//return the results to the browser
 			$this->expiresHeaders($compmtime);
@@ -92,7 +92,7 @@ class RoadRunner{
 	*/
 	public function finalOutput() {
 		if($this->supportsGzip){
-			$this->sendgzip();
+			$this->sendGzip();
 			return $this->compressedOutput;
 		} else {
 			return $this->output;
@@ -104,7 +104,7 @@ class RoadRunner{
 	* Turned the colon removal off by default as it might be in normal text
 	* returns string
 	*/
-	public function compress_page($buffer,$type='half') {
+	public function compressPage($buffer,$type='half') {
 
 		// Remove comments (mostly CSS comments)
 		$buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
@@ -132,7 +132,7 @@ class RoadRunner{
 	* eg. JQuery, JQueryUI, etc.
 	* returns string
 	*/
-	public function compress_js($raw) {
+	public function compressJs($raw) {
 		require_once('min/jshrink.php');
 		$compressed = \JShrink\Minifier::minify($raw,array('flaggedComments' => false));
 		// Remove whitespace
@@ -145,7 +145,7 @@ class RoadRunner{
 	* Makes the GZip file of the already compressed file
 	* returns string
 	*/
-	public function compressgz($data,$file) {
+	public function compressGz($data,$file) {
         $contents = gzencode(trim(preg_replace( '/\s+/', ' ', $data)),9);
         // save the result
         $fp = fopen($file, 'w');
@@ -159,13 +159,13 @@ class RoadRunner{
 	* Appends the CSS to the HTML string using the key
 	* returns string
 	*/
-	public function append_css($fileCss,$contents) {
+	public function appendCss($fileCss,$contents) {
 		//Grab the css
 		$fp = fopen($fileCss, 'r');
 		$css = fread($fp, filesize($fileCss));
 		fclose($fp);
 		//Compress the CSS with colons
-		$css = $this->compress_page($css,'full');
+		$css = $this->compressPage($css,'full');
 		return preg_replace('#%XXX%#', $css, $contents);
 	}
 
@@ -173,7 +173,7 @@ class RoadRunner{
 	* Loads the GZip version of the compressed file
 	* returns void
 	*/
-	public function loadcompressgz($file) {
+	public function loadCompressGz($file) {
         if(file_exists($file)){
             $fp = fopen($file, 'r');
             $contents = fread($fp, filesize($file));
@@ -184,11 +184,11 @@ class RoadRunner{
         	
         	if (!isset($this->output)) {
         		$output2 = $this->loadCache(substr($file,0,-3));
-        		$contents = $this->compressgz($output2,$file);
+        		$contents = $this->compressGz($output2,$file);
         		return;
         	}else{
         		$data = $this->output;
-	        	$contents = $this->compressgz($data,$file);
+	        	$contents = $this->compressGz($data,$file);
 	            return;
 	        }
         }
@@ -251,7 +251,7 @@ class RoadRunner{
 	* Specify that the content sent will be GZip
 	* returns void
 	*/
-	public function sendgzip() {
+	public function sendGzip() {
 		header("Content-Encoding: gzip");
 	}
 
